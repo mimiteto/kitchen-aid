@@ -4,8 +4,12 @@
 This module provides base command and result utilities
 """
 
+from argparse import ArgumentParser
+
 from dataclasses import dataclass
-from typing import Callable, Type
+from typing import Any, Callable
+
+from gears.singleton_meta import SingletonController
 
 
 @dataclass
@@ -50,6 +54,9 @@ class Command:
 
     can_undo: bool = False
 
+    def __init__(self, receiver: Any) -> None:
+        self._receiver = receiver
+
     def execute(self) -> Result:
         """
         All commands are expected to implement this method
@@ -78,7 +85,7 @@ class CommandHandler:
 
     def __init__(
         self,
-        command: Type[Command],
+        command: str,
         args: list | None,
         kwargs: dict | None,
         retry_limit: int = 3,
@@ -87,10 +94,13 @@ class CommandHandler:
             args = []
         if kwargs is None:
             kwargs = {}
-        self.command = command(*args, **kwargs)
+        cmd: type[Command]
+        receiver: type
+        cmd, receiver, _ = CommandMapper().get_command(command)
+        self.command: Command = cmd(receiver=receiver(*args, **kwargs))
         self.retry_limit = retry_limit
 
-    def _execute(self, exec: Callable) -> Result:
+    def _execute(self, executable: Callable) -> Result:
         """
         Executable utility.
         It will raise OperationError if the operation fails more than the retry limit
@@ -100,7 +110,7 @@ class CommandHandler:
         errors: list[str] = []
         while retries <= self.retry_limit:
             try:
-                result = exec()
+                result = executable()
             except RetriableError as error:
                 retries += 1
                 errors.append(str(error))
@@ -131,3 +141,26 @@ class CommandHandler:
             f"Operation failed after {self.retry_limit} retries: {errors}",
             undo_result=result,
         )
+
+
+class CommandMapper(metaclass=SingletonController):
+    """ Command mapper class """
+
+    def __init__(self) -> None:
+        self._command_map: dict[str, tuple[type[Command], type, ArgumentParser]] = {}
+
+    def register(
+        self,
+        command: type[Command],
+        receiver: type,
+        name: str,
+        arg_parser: ArgumentParser | None = None
+    ) -> None:
+        """ Register a command """
+        if arg_parser is None:
+            arg_parser = ArgumentParser()
+        self._command_map[name] = (command, receiver, arg_parser)
+
+    def get_command(self, name: str) -> tuple[type[Command], type, ArgumentParser]:
+        """ Get a command """
+        return self._command_map[name]

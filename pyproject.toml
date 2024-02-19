@@ -24,8 +24,8 @@ Issues = "https://github.com/mimiteto/kitchen-aid/issues"
 
 [tool.hatch.version]
 source = "code"
-path = "kitchen-aid/__about__.py"
+path = "kitchen_aid/__about__.py"
 
 [tool.hatch.dependencies]
 source = "code"
-path = "kitchen-aid/__about__.py"
+path = "kitchen_aid/__about__.py"
