@@ -41,7 +41,7 @@ ensure-venv:
 
 .PHONY: venv-update
 venv-update:
-	source .venv/bin/activate && pip install -r requirements.txt -r resources/dev-requirements.txt --upgrade && pip install .
+	source .venv/bin/activate && pip install -r requirements.txt -r resources/dev-requirements.txt --upgrade
 
 .PHONY: lint
 lint: ensure-venv lint-python lint-helm
@@ -65,9 +65,16 @@ qtest: ensure-venv
 	pytest --cov=$(APP_NAME_UNDERSCORE) --cov=tests --cov-report=html:htmlcov .
 	@$(OPEN) htmlcov/index.html
 
+.PHONY: build-py
+build-py: ensure-venv
+	@hatch build
+
+.PHONY: build-docker
+build-docker:
+	@docker build -t $(APP_NAME):latest .
+
 .PHONY: build
-build: ensure-venv
-	hatch build
+build: build-py build-docker
 
 .PHONY: test
 test: lint qtest
