@@ -33,4 +33,4 @@ jobs:
           ./get_helm.sh
 
       - name: Run Helm Commands
-        run: make test-helm
+        run: make lint-helm

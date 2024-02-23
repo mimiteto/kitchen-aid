@@ -8,7 +8,6 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from kitchen_aid.models.command import (
-    Command,
     FailedOperation,
     RetriableError,
     Result,
@@ -132,7 +131,9 @@ class TestCommandHandlerExecute(unittest.TestCase):
         """ Test execute method when command succeeds and can undo """
         cmd_mock = MagicMock()
         cmd_instance_mock = MagicMock()
-        cmd_instance_mock.execute.return_value = Result(success=True, message="Command executed successfully", errors=[])
+        cmd_instance_mock.execute.return_value = Result(
+            success=True, message="Command executed successfully", errors=[]
+        )
         cmd_instance_mock.can_undo = True
         cmd_mock.return_value = cmd_instance_mock
         cmap_obj = MagicMock()

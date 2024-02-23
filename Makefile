@@ -21,7 +21,7 @@ else
 endif
 
 .PHONY: venv
-venv: venv-build venv-update env-build
+venv: venv-build venv-update #env-build
 
 .PHONY: venv-build
 venv-build:
