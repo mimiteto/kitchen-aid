@@ -2,3 +2,4 @@ schema
 jsonschema
 ruamel.yaml
 gears @ git+https://github.com/mimiteto/python-gears@master
+requests

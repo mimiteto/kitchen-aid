@@ -35,6 +35,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get package version
         run: echo VERSION=$(cat VERSION) >> $GITHUB_ENV
 
       - name: Set version for PR

@@ -1,13 +1,12 @@
 FROM python:3.12.2-slim as base
 
-ARG APP_NAME=kitchen-aid
-ENV APP_NAME=${APP_NAME}
-
 FROM base as builder
 WORKDIR /install
 
 COPY requirements.txt /requirements.txt
-RUN pip install \
+RUN apt-get update &&\
+    apt-get install -y git &&\
+    pip install \
     --no-cache-dir \
     --disable-pip-version-check \
     --prefix=/install \
@@ -16,13 +15,13 @@ RUN pip install \
 
 FROM base
 
+ENV APP_NAME=kitchen-aid
 WORKDIR /${APP_NAME}
-ENV PYTHONPATH=/install:${APP}
-ENTRYPOINT ["python3", "-m", "${APP_NAME}"]
-CMD ["/conf/conf.yaml"]
+ENV PYTHONPATH=/install:/${APP_NAME}
+ENTRYPOINT ["/usr/local/bin/python", "-m", "kitchen_aid"]
+CMD ["--conf", "/conf/conf.yaml"]
 
 COPY --from=builder /install /usr/local
-COPY ${APP_NAME} /${APP_NAME}
-COPY VERSION /${APP_NAME}/VERSION
+COPY . /${APP_NAME}
 
-WORKDIR /app/${APP_NAME}
+WORKDIR /${APP_NAME}

@@ -1,5 +1,6 @@
 TEST_CASE ?=
 APP_NAME := kitchen-aid
+APP_NAME_UNDERSCORE := kitchen_aid
 red = \033[31m
 color_reset = \033[0m
 SHELL := /bin/bash
@@ -20,7 +21,7 @@ else
 endif
 
 .PHONY: venv
-venv: venv-build venv-update env-build
+venv: venv-build venv-update #env-build
 
 .PHONY: venv-build
 venv-build:
@@ -56,16 +57,24 @@ lint-python: ensure-venv
 .PHONY: lint-helm
 lint-helm:
 	@helm lint deploy/kitchen-aid
-	@ helm template deploy/kitchen-aid
+	@helm template deploy/kitchen-aid
 
 .PHONY: qtest
 qtest: ensure-venv
-	pytest --cov=prom_http_sd --cov-report=html:htmlcov tests/
+	rm -rf htmlcov
+	pytest --cov=$(APP_NAME_UNDERSCORE) --cov=tests --cov-report=html:htmlcov .
 	@$(OPEN) htmlcov/index.html
 
+.PHONY: build-py
+build-py: ensure-venv
+	@hatch build
+
+.PHONY: build-docker
+build-docker:
+	@docker build -t $(APP_NAME):latest .
+
 .PHONY: build
-build: ensure-venv
-	hatch build
+build: build-py build-docker
 
 .PHONY: test
 test: lint qtest
@@ -77,7 +86,7 @@ env-build:
 .PHONY: run
 run: ensure-venv
 	@touch $(CONF_FILE)
-	@python3 -m $(APP_NAME) $(CONF_FILE)
+	@python3 -m $(APP_NAME) --config $(CONF_FILE)
 
 .PHONY: prepare-pr
 prepare-pr: test
