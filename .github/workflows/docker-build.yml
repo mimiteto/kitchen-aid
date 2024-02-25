@@ -12,11 +12,9 @@ on:
       - closed
     branches:
       - master
+    paths:
+      - VERSION
 
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
 
 env:
   REGISTRY: ghcr.io
