@@ -15,12 +15,13 @@ from kitchen_aid.models.command import CommandMapper, CommandHandler
 from kitchen_aid.pkgs.commands.get_web_page import GetWebPage, HTTPRequest
 
 
-def usage() -> None:
+def usage(args: list[str]) -> None:
     """ Print usage """
     print("Usage: python3 -m kitchen_aid --config config")
     print("OR")
     print("Usage: python3 -m kitchen_aid --command command [with optional args]")
     print("Command args are specific to the command")
+    print(f"Called with args: {args}")
 
 
 def register_commands() -> None:
@@ -85,7 +86,7 @@ def main(args: list) -> None:
     Main entrypoint for kitchen_aid package
     """
     if len(args) < 2:
-        usage()
+        usage(args)
         return
     register_commands()
     if args[1] == "--config":

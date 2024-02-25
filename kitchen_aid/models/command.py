@@ -96,7 +96,7 @@ class CommandHandler:
             kwargs = {}
         cmd: type[Command]
         receiver: type
-        cmd, receiver, _ = CommandMapper().get_command(command)
+        cmd, receiver, _ = CommandMapper().get_command(command)  # type: ignore
         self.command: Command = cmd(receiver=receiver(*args, **kwargs))
         self.retry_limit = retry_limit
 
