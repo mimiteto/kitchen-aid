@@ -160,7 +160,7 @@ class STDOutThread(IThread):
         print(message.decode("utf-8"))
 
 
-class CLIInterface(InteractInterface):
+class ClearTextInterface(InteractInterface):
     """ Command line interface """
     has_threads: bool = False
 
@@ -204,6 +204,18 @@ class InteractInterfacesRegistry(metaclass=SingletonController):
         self._lock: Lock = Lock()
         self._command_queue: Queue
         self._command_result_queue: Queue
+        self._default_class: type[InteractInterface] = ClearTextInterface
+
+    @property
+    def default(self) -> InteractInterface:
+        """ Get the default interface """
+        self._register_default()
+        return self._interfaces["default"]
+
+    @property
+    def default_class(self) -> type[InteractInterface]:
+        """ Get the default class """
+        return self._default_class
 
     def add_queues(self, command_queue: Queue, command_result_queue: Queue) -> None:
         """ Add queues to the registry """
@@ -217,7 +229,7 @@ class InteractInterfacesRegistry(metaclass=SingletonController):
             raise RuntimeError("Queues not set!")
 
         if "default" not in self._interfaces:
-            self._interfaces["default"] = CLIInterface(
+            self._interfaces["default"] = self.default_class(
                 self._command_queue, self._command_result_queue
             )
 
