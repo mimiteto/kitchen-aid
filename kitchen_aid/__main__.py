@@ -82,7 +82,7 @@ def execute_command_flow(args: list[str]) -> None:
     print(cmd_handler.command.execute())
 
 
-def execute_bot_flow(conf: str) -> None:
+def execute_robot_flow(conf: str) -> None:
     """ This should trigger the standard execution flow """
     print("Standard execution flow")
     print(f"Conf file: {conf}")
@@ -109,7 +109,7 @@ def main(args: list) -> None:
         return
     register_commands()
     if args[1] == "--config":
-        execute_bot_flow(argv[2])
+        execute_robot_flow(argv[2])
         return
     if args[1] == "--command":
         execute_command_flow(args[2:])

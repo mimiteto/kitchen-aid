@@ -9,9 +9,10 @@ from typing import Any, OrderedDict
 from queue import Queue
 from threading import Lock
 
+from gears.singleton_meta import SingletonController
+
 import kitchen_aid.models.exceptions as excs
 from kitchen_aid.models.command import Result, CommandMapper
-from gears.singleton_meta import SingletonController
 
 
 def get_cmd_id(
@@ -113,12 +114,9 @@ class InteractInterface:
     ) -> None:
         """ Receive a command and schedule it for execution """
         cback: InteractInterface
-        if args is None:
-            args = []
-        if kwargs is None:
-            kwargs = {}
-        if thread is None:
-            thread = self.main_thread
+        args = args or []
+        kwargs = kwargs or {}
+        thread = thread or self.main_thread
         if cback_iiface is None:
             cback = self
         else:

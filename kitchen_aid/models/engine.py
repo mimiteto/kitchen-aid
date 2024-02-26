@@ -7,29 +7,13 @@ This module povides the kitchen aid engine.
 from threading import Lock, Thread
 from concurrent.futures import ThreadPoolExecutor, Executor, Future
 from queue import Queue
-from typing import Any, Callable
+from typing import Any
 from time import sleep
 
 from kitchen_aid.models.command import Result, CommandHandler
-from kitchen_aid.models.interact import IThread, InteractInterface, InteractInterfacesRegistry
-
-
-def get_cmd_id(
-        cmd: str,
-        args: list[str],
-        kw_args: dict[str, str],
-        thread: IThread,
-        iface: InteractInterface
-) -> str:
-    """ Get a command id """
-    cmd_id: str = f"cmd:{cmd},args:"
-    for arg in args:
-        cmd_id += f"arg::{arg}"
-    cmd_id += ",kw_args:"
-    for k, v in kw_args.items():
-        cmd_id += f"kw_arg::{k}--{v}"
-    cmd_id += f",thread:{thread},iface:{iface}"
-    return cmd_id
+from kitchen_aid.models.interact import (
+    InteractInterface, InteractInterfacesRegistry, get_cmd_id
+)
 
 
 class Engine:
