@@ -9,6 +9,7 @@ from typing import Any, OrderedDict
 from queue import Queue
 from threading import Lock
 
+import kitchen_aid.models.exceptions as excs
 from kitchen_aid.models.command import Result, CommandMapper
 from gears.singleton_meta import SingletonController
 
@@ -140,7 +141,7 @@ class InteractInterface:
     ) -> None:
         """ Post a command result to the queue """
         cmd, args, kwargs, thread, _ = self._command_inventory[cmd_id]
-        args.extend(f"{arg.key}: {arg.value}" for arg in kwargs.items())
+        args.extend(f"{arg[0]}: {arg[1]}" for arg in kwargs.items())
         self._post_message(
             wrap_result(result, cmd, args).encode("utf-8"),
             thread
@@ -182,10 +183,21 @@ class ClearTextInterface(InteractInterface):
 
     def listen(self) -> None:
         """ Listen for inputs """
+        stdin_input: str = ""
         while True:
-            stdin_input = input("Enter command: ")
+            try:
+                stdin_input = input("Enter command: ")
+            except EOFError:
+                print()
+            if len(stdin_input) == 0:
+                print("No command entered")
+                continue
             cmd, *args = stdin_input.split()
-            _, _, parser = self._cmd_map.get_command(cmd)  # type: ignore
+            try:
+                _, _, parser = self._cmd_map.get_command(cmd)  # type: ignore
+            except excs.CommandNotFound:
+                print(f"Command {cmd} not found")
+                continue
             kw_args = vars(parser.parse_args(args))
             self.receive_command(
                 command=cmd,

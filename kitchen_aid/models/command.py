@@ -11,6 +11,8 @@ from typing import Any, Callable
 
 from gears.singleton_meta import SingletonController
 
+import kitchen_aid.models.exceptions as excs
+
 
 @dataclass
 class Result:
@@ -30,13 +32,7 @@ class Result:
         return self.message.encode("utf-8")
 
 
-class RetriableError(Exception):
-    """
-    This error identifies a retriable error
-    """
-
-
-class FailedOperation(Exception):
+class FailedOperation(excs.GenericCommandError):
     """
     This error identifies a failed operation
     """
@@ -111,7 +107,7 @@ class CommandHandler:
         while retries <= self.retry_limit:
             try:
                 result = executable()
-            except RetriableError as error:
+            except excs.RetriableError as error:
                 retries += 1
                 errors.append(str(error))
             else:
@@ -163,4 +159,6 @@ class CommandMapper(metaclass=SingletonController):
 
     def get_command(self, name: str) -> tuple[type[Command], type, ArgumentParser]:
         """ Get a command """
+        if name not in self._command_map:
+            raise excs.CommandNotFound(f'Command "{name}" not found')
         return self._command_map[name]
