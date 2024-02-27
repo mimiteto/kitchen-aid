@@ -23,13 +23,11 @@ def get_cmd_id(
         iface: "InteractInterface"
 ) -> str:
     """ Get a command id """
-    cmd_id: str = f"cmd:{cmd},args:"
-    for arg in args:
-        cmd_id += f"arg::{arg}"
-    cmd_id += ",kw_args:"
-    for k, v in kw_args.items():
-        cmd_id += f"kw_arg::{k}--{v}"
-    cmd_id += f",thread:{thread},iface:{iface}"
+    cmd_id: str = f"cmd:{cmd};args:"
+    cmd_id += ",".join(f"arg::{arg}" for arg in args)
+    cmd_id += ";kw_args:"
+    cmd_id += ",".join(f"kw_arg::{k}--{v}" for k, v in kw_args.items())
+    cmd_id += f";thread:{thread};iface:{iface}"
     return cmd_id
 
 
@@ -50,7 +48,7 @@ def wrap_result(result: Result, call: str, filtered_args: list | None = None) ->
 
 
 # pylint: disable=too-few-public-methods
-class IThread:
+class IThread:  # pragma: no cover
     """
     Basic thread wrapper.
     Intention with thread is that it provides somewhat of universal way
@@ -216,13 +214,13 @@ class InteractInterfacesRegistry(metaclass=SingletonController):
         self._command_result_queue: Queue
         self._default_class: type[InteractInterface] = ClearTextInterface
 
-    @property
+    @ property
     def default(self) -> InteractInterface:
         """ Get the default interface """
         self._register_default()
         return self._interfaces["default"]
 
-    @property
+    @ property
     def default_class(self) -> type[InteractInterface]:
         """ Get the default class """
         return self._default_class
