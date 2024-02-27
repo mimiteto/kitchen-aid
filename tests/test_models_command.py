@@ -9,11 +9,12 @@ from unittest.mock import MagicMock, patch
 
 from kitchen_aid.models.command import (
     FailedOperation,
-    RetriableError,
     Result,
     CommandHandler,
     CommandMapper
 )
+
+from kitchen_aid.models.exceptions import RetriableError
 
 
 class TestCommandMapper(unittest.TestCase):

@@ -8,19 +8,27 @@ Use like:
     python3 -m kitchen_aid --command command [with optional args]
 """
 
-from sys import argv
+from time import sleep
 import argparse
+from sys import argv
+from threading import Thread
 
 from kitchen_aid.models.command import CommandMapper, CommandHandler
-from kitchen_aid.pkgs.commands.get_web_page import GetWebPage, HTTPRequest
+from kitchen_aid.models.engine import CommandEngine, InteractEngine
+
+# commands
+from kitchen_aid.pkgs.commands.get_web_page import (
+    GetWebPage, HTTPRequest
+)
 
 
-def usage() -> None:
+def usage(args: list[str]) -> None:
     """ Print usage """
     print("Usage: python3 -m kitchen_aid --config config")
     print("OR")
     print("Usage: python3 -m kitchen_aid --command command [with optional args]")
     print("Command args are specific to the command")
+    print(f"Called with args: {args}")
 
 
 def register_commands() -> None:
@@ -74,10 +82,22 @@ def execute_command_flow(args: list[str]) -> None:
     print(cmd_handler.command.execute())
 
 
-def execute_bot_flow(conf: str) -> None:
+def execute_robot_flow(conf: str) -> None:
     """ This should trigger the standard execution flow """
     print("Standard execution flow")
     print(f"Conf file: {conf}")
+    cmd_engine = CommandEngine()
+    int_engine = InteractEngine(
+        {"interacts": {}},
+        cmd_engine.command_queue,
+        cmd_engine.command_result_queue
+    )
+    eng_thread = Thread(target=cmd_engine.run, daemon=True)
+    int_thread = Thread(target=int_engine.run, daemon=True)
+    eng_thread.start()
+    int_thread.start()
+    while True:
+        sleep(100000)
 
 
 def main(args: list) -> None:
@@ -85,11 +105,11 @@ def main(args: list) -> None:
     Main entrypoint for kitchen_aid package
     """
     if len(args) < 2:
-        usage()
+        usage(args)
         return
     register_commands()
     if args[1] == "--config":
-        execute_bot_flow(argv[2])
+        execute_robot_flow(argv[2])
         return
     if args[1] == "--command":
         execute_command_flow(args[2:])

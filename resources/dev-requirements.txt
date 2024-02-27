@@ -1,3 +1,4 @@
+pydebug
 pylint
 flake8
 pytest
