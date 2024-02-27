@@ -86,10 +86,8 @@ class CommandHandler:
         kwargs: dict | None,
         retry_limit: int = 3,
     ) -> None:
-        if args is None:
-            args = []
-        if kwargs is None:
-            kwargs = {}
+        args = args or []
+        kwargs = kwargs or {}
         cmd: type[Command]
         receiver: type
         cmd, receiver, _ = CommandMapper().get_command(command)  # type: ignore

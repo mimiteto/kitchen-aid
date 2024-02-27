@@ -12,7 +12,7 @@ from time import sleep
 
 from kitchen_aid.models.command import Result, CommandHandler
 from kitchen_aid.models.interact import (
-    InteractInterface, InteractInterfacesRegistry, get_cmd_id
+    IThread, InteractInterface, InteractInterfacesRegistry, get_cmd_id
 )
 
 
@@ -89,6 +89,9 @@ class CommandEngine(Engine):
         Emissions are threaded.
         Call this method in it's own thread.
         """
+        cmd_id: str
+        result: Result
+        iface: InteractInterface
         while True:
             cmd_id, result, iface = self._command_result_queue.get()
             self._emmit_command_result(cmd_id, result, iface)
@@ -98,6 +101,11 @@ class CommandEngine(Engine):
         Execute polls the command queue and schedules the command for execution.
         Results are placed in the result queue.
         """
+        cmd: str
+        args: list[str]
+        kw_args: dict[str, Any]
+        thread: IThread
+        iface: InteractInterface
 
         while True:
             cmd, args, kw_args, thread, iface = self._command_queue.get()

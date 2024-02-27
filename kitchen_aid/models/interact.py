@@ -94,11 +94,11 @@ class InteractInterface:
         """ Spawn a new thread """
         raise NotImplementedError
 
-    def post(self, message: bytes) -> None:
+    def post(self, message: bytes, thread: IThread | None = None) -> None:
         """ Post a message """
         self._post_message(
             message,
-            self.spawn_thread() if self.has_threads else self.main_thread
+            thread if thread else self.spawn_thread() if self.has_threads else self.main_thread
         )
 
     # pylint: disable=too-many-arguments

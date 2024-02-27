@@ -19,3 +19,7 @@ class RetriableError(GenericCommandError):
 
 class CommandNotFound(GenericCommandError):
     """ This error identifies a command not found error """
+
+
+class CommandTryAgain(RetriableError):
+    """ This error identifies a command that should be retried """
