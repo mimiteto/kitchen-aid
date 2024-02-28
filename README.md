@@ -42,4 +42,4 @@ Start with running `make venv`.
 This would build your virtual env. You will still need to activate it. Check the output of the command.
 
 You can start kitchen aid with `make run`
-Check the rest of the docs in [docs/].
+Check the rest of the docs in [docs/](./docs/).
