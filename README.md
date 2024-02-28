@@ -1,4 +1,4 @@
-# Kithen aid
+# Kitchen aid
 
 Kitchen aid is a robot that aims to assist me in my tasks at home.
 It's second task is to be part of my journey in improving my Python skills.
