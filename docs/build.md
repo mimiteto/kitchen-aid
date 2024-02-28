@@ -4,7 +4,7 @@ Build produces two artefacts:
 
 * Python wheel
 * docker container
-Application version is loaded from the [VERSION] file.
+Application version is loaded from the [VERSION](../VERSION) file.
 
 ## Wheel
 
