@@ -1,3 +1,6 @@
+# 0.2.1
+Replacing `requests` with `httpx` lib.
+
 # 0.2.0
 Introduction of interactive interfaces.
 Introduction of basic ClearTextInterface.

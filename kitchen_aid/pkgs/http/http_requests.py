@@ -6,7 +6,7 @@ Module provides http requests utils
 
 from typing import Any, Callable
 
-import requests
+import httpx
 
 
 # pylint: disable=too-few-public-methods
@@ -27,7 +27,7 @@ class HTTPRequest:
         self._headers: dict[str, str] | None = headers
         self._params: dict[str, str] | None = params
         self._timeout: int = timeout
-        self._req_callable: Callable = getattr(requests, method.lower())
+        self._req_callable: Callable = getattr(httpx, method.lower())
         self._data: str | None = data
 
         self._request_kw_args: dict[str, Any] = {}
@@ -35,8 +35,10 @@ class HTTPRequest:
             if getattr(self, f"_{key}"):
                 self._request_kw_args[key] = getattr(self, f"_{key}")
 
-    def do_request(self) -> requests.Response:
+    def do_request(self) -> httpx.Response:
         """ Get the web page """
-        response: requests.Response = self._req_callable(self._url, **self._request_kw_args)
+        response: httpx.Response = self._req_callable(
+            self._url, follow_redirects=True, **self._request_kw_args
+        )
         response.raise_for_status()
         return response
